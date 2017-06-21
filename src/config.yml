@@ -1,0 +1,4 @@
+TimeZone: "Asia/Tokyo"
+File: "yyyy-MM-dd"
+Time: "HH:mm:ss"
+Format: "%Time: %Player@%Server: %Message"
