@@ -1,15 +1,16 @@
-package net.simplyrin.chatrecorder.spigot;
+package net.simplyrin.chatrecorder.bungee;
 
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bstats.bungeecord.Metrics;
 
 import lombok.Getter;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.simplyrin.chatrecorder.api.ChatRecorder;
-import net.simplyrin.chatrecorder.spigot.listener.EventListener;
+import net.simplyrin.chatrecorder.bungee.listener.EventListener;
 
 /**
- * Created by SimplyRin on 2019/11/29.
+ * Created by SimplyRin on 2017/06/27.
  *
  * Copyright (c) 2019 SimplyRin
  *
@@ -32,7 +33,7 @@ import net.simplyrin.chatrecorder.spigot.listener.EventListener;
  * SOFTWARE.
  */
 @Getter
-public class Main extends JavaPlugin implements Listener {
+public class Main extends Plugin implements Listener {
 
 	private ChatRecorder chatRecorder;
 	private Configuration pluginConfig;
@@ -42,7 +43,9 @@ public class Main extends JavaPlugin implements Listener {
 		this.chatRecorder = new ChatRecorder(this.getDataFolder());
 		this.pluginConfig = this.chatRecorder.init();
 
-		this.getServer().getPluginManager().registerEvents(new EventListener(this), this);
+		this.getProxy().getPluginManager().registerListener(this, new EventListener(this));
+
+		new Metrics(this);
 	}
 
 }

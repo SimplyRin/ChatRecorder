@@ -1,15 +1,15 @@
-package net.simplyrin.chatrecorder.spigot;
+package net.simplyrin.chatrecorder.bungee.listener;
 
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import lombok.Getter;
-import net.md_5.bungee.config.Configuration;
-import net.simplyrin.chatrecorder.api.ChatRecorder;
-import net.simplyrin.chatrecorder.spigot.listener.EventListener;
+import lombok.AllArgsConstructor;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.ChatEvent;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.event.EventHandler;
+import net.simplyrin.chatrecorder.api.FakePlayer;
+import net.simplyrin.chatrecorder.bungee.Main;
 
 /**
- * Created by SimplyRin on 2019/11/29.
+ * Created by SimplyRin on 2017/06/27.
  *
  * Copyright (c) 2019 SimplyRin
  *
@@ -31,18 +31,14 @@ import net.simplyrin.chatrecorder.spigot.listener.EventListener;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@Getter
-public class Main extends JavaPlugin implements Listener {
+@AllArgsConstructor
+public class EventListener implements Listener {
 
-	private ChatRecorder chatRecorder;
-	private Configuration pluginConfig;
+	private Main instance;
 
-	@Override
-	public void onEnable() {
-		this.chatRecorder = new ChatRecorder(this.getDataFolder());
-		this.pluginConfig = this.chatRecorder.init();
-
-		this.getServer().getPluginManager().registerEvents(new EventListener(this), this);
+	@EventHandler
+	public void onChat(ChatEvent event) {
+		this.instance.getChatRecorder().saveChat(this.instance.getPluginConfig(), FakePlayer.parsePlayer((ProxiedPlayer) event.getSender()), event.getMessage());
 	}
 
 }

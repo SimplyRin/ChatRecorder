@@ -1,15 +1,14 @@
-package net.simplyrin.chatrecorder.spigot;
+package net.simplyrin.chatrecorder.api;
 
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
+import java.util.UUID;
 
-import lombok.Getter;
-import net.md_5.bungee.config.Configuration;
-import net.simplyrin.chatrecorder.api.ChatRecorder;
-import net.simplyrin.chatrecorder.spigot.listener.EventListener;
+import org.bukkit.entity.Player;
+
+import lombok.Data;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
- * Created by SimplyRin on 2019/11/29.
+ * Created by SimplyRin on 2019/12/21.
  *
  * Copyright (c) 2019 SimplyRin
  *
@@ -31,18 +30,31 @@ import net.simplyrin.chatrecorder.spigot.listener.EventListener;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@Getter
-public class Main extends JavaPlugin implements Listener {
+@Data
+public class FakePlayer {
 
-	private ChatRecorder chatRecorder;
-	private Configuration pluginConfig;
+	private UUID uniqueId;
+	private String name;
+	private String server;
 
-	@Override
-	public void onEnable() {
-		this.chatRecorder = new ChatRecorder(this.getDataFolder());
-		this.pluginConfig = this.chatRecorder.init();
+	public static FakePlayer parsePlayer(Player player) {
+		FakePlayer fakePlayer = new FakePlayer();
 
-		this.getServer().getPluginManager().registerEvents(new EventListener(this), this);
+		fakePlayer.uniqueId = player.getUniqueId();
+		fakePlayer.name = player.getName();
+		fakePlayer.server = "SPIGOT";
+
+		return fakePlayer;
+	}
+
+	public static FakePlayer parsePlayer(ProxiedPlayer player) {
+		FakePlayer fakePlayer = new FakePlayer();
+
+		fakePlayer.uniqueId = player.getUniqueId();
+		fakePlayer.name = player.getName();
+		fakePlayer.server = player.getServer().getInfo().getName();
+
+		return fakePlayer;
 	}
 
 }

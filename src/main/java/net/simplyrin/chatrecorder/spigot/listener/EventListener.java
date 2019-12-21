@@ -1,21 +1,36 @@
 package net.simplyrin.chatrecorder.spigot.listener;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import lombok.AllArgsConstructor;
+import net.simplyrin.chatrecorder.api.FakePlayer;
 import net.simplyrin.chatrecorder.spigot.Main;
 
+/**
+ * Created by SimplyRin on 2019/11/29.
+ *
+ * Copyright (c) 2019 SimplyRin
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 @AllArgsConstructor
 public class EventListener implements Listener {
 
@@ -23,42 +38,7 @@ public class EventListener implements Listener {
 
 	@EventHandler
 	public void onChat(AsyncPlayerChatEvent event) {
-		Player player = event.getPlayer();
-
-		File playerFile = new File(this.instance.getDataFolder(), "Player/" + player.getUniqueId().toString());
-		if (!playerFile.exists()) {
-			playerFile.mkdir();
-		}
-
-		SimpleDateFormat file = new SimpleDateFormat(this.instance.getPluginConfig().getString("File"));
-		SimpleDateFormat time = new SimpleDateFormat(this.instance.getPluginConfig().getString("Time"));
-
-		Date date = new Date();
-
-		File logFile = new File(playerFile, file.format(date) + ".log");
-		if (!logFile.exists()) {
-			try {
-				logFile.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		PrintWriter pw = null;
-		try {
-			pw = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		String format = this.instance.getPluginConfig().getString("Format");
-
-		format = format.replace("%Time", time.format(date).toString());
-		format = format.replace("%Player", player.getName());
-		format = format.replace("%Message", event.getMessage());
-
-		pw.println(format);
-		pw.close();
+		this.instance.getChatRecorder().saveChat(this.instance.getPluginConfig(), FakePlayer.parsePlayer(event.getPlayer()), event.getMessage());
 	}
 
 }
